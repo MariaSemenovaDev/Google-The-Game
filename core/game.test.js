@@ -1,25 +1,44 @@
 import {Game} from "./game";
-import {GameStatuses} from "../constants/game-statuses";
+import {GameStatus} from "./constants";
 
-describe('game', () => {
-    it('game should be created and return status', () => {
-        const game = new Game()
-        expect(game.getStatus()).toBe(GameStatuses.SETTINGS);
-    })
-
-    it('game should be created and return status', async () => {
-        const game = new Game()
-        await game.start();
-        expect(game.getStatus()).toBe(GameStatuses.IN_PROGRESS);
-    })
-
-    it('goblin should be in the Grid after start', async () => {
+describe('description....', ()=>{
+    test('Check game initialization', () => {
         const game = new Game();
-        expect(game.goblinPosition).toBeNull();
-        await game.start();
-        expect(game.goblinPosition.x).toBeLessThan(game.gridSize.columnsCount);
-        expect(game.goblinPosition.x).toBeGreaterThanOrEqual(0);
-        expect(game.goblinPosition.y).toBeLessThan(game.gridSize.rowsCount);
-        expect(game.goblinPosition.y).toBeGreaterThanOrEqual(0);
+        game.settings = {
+            gridSize: {
+                rows: 2,
+                columns: 2,
+            }
+        }
+
+        const {gridSize} = game.settings;
+
+        expect(gridSize.rows).toBe(2);
+        expect(gridSize.columns).toBe(2);
+    });
+
+    test('Check start game', () => {
+        const game = new Game();
+
+        expect(game.status).toBe(GameStatus.pending);
+
+        game.startGame()
+
+        expect(game.status).toBe(GameStatus.inProgress);
+    });
+
+    test('Check players position', () => {
+        for(let i = 0; i < 50; i++){
+            const game = new Game();
+
+            game.settings = {
+                gridSize: {
+                    rows: 4,
+                    columns: 4,
+                }
+            }
+
+            expect(game.player1.position).not.toEqual(game.player2.position);
+        }
     });
 })

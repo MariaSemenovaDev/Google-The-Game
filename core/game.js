@@ -1,25 +1,78 @@
-import {GameStatuses} from "../constants/game-statuses";
+import { GameStatus } from "./constants"
 
+export class Hello {
+    hello() {
+        return 'hello world'
+    }
+
+}
 export class Game {
-    #status = GameStatuses.SETTINGS
-
     #settings = {
         gridSize: {
-            columnsCount: 4,
-            rowsCount: 4
-        },
-        googleJumpInterval: 1000
-    }
-
-    start() {
-        if (this.#status !== GameStatuses.SETTINGS) {
-            throw new Error('Game must be in Settings before Start')
+            rows: 2,
+            columns: 2,
         }
-        this.#status = GameStatuses.IN_PROGRESS
+    };
+    #status = GameStatus.pending;
+    #player1
+    #player2
+
+    constructor() {
+        this.#player1 = new Player(this.#getPlayerPosition());
+        this.#player2 = new Player(this.#getPlayerPosition([this.#player1.position]));
     }
 
-    getStatus () {
-         return this.#status;
+    set settings(settings) {
+        this.#settings = settings
+    }
+    get settings() {
+        return this.#settings
+    }
+    get status() {
+        return this.#status
+    }
+    get player1() {
+        return this.#player1
+    }
+    get player2() {
+        return this.#player2
+    }
+    startGame() {
+        this.#status = GameStatus.inProgress
+    }
+
+    #getPlayerPosition(exceptionPositions = []) {
+        let x;
+        let y;
+
+        do {
+            x = this.#getRandomNumber(this.#settings.gridSize.columns);
+            y = this.#getRandomNumber(this.#settings.gridSize.rows);
+        } while (exceptionPositions.some((el)=> el.x === x && el.y === y));
+
+        return {
+            x, y
+        };
+    }
+
+    #getRandomNumber(min = 2, max= 2) {
+        return Math.floor(Math.random() * max + 1);
     }
 }
 
+export class Player {
+    constructor(position) {
+        this.position = position;
+    }
+}
+
+// #getRandomPosition() {
+//     let newX = NumberUtil.getRandomNumber(this.#settings.gridSize.x);
+//     let newY = NumberUtil.getRandomNumber(this.#settings.gridSize.y);
+//
+//     if (newX === this.#player1.position.x && newY === this.#player1.position.y) {
+//         return this.#getRandomPosition();
+//     }
+//
+//     return { x: newX, y: newY };
+// }
